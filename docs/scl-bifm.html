@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCL + BIFM-64 - Semantic Commits</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hero-scl {
+            min-height: 60vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .demo-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d9ff;
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.2);
+        }
+        
+        .braille-display {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .braille-char {
+            font-size: 3rem;
+            color: #00d9ff;
+            display: block;
+            margin: 1rem 0;
+        }
+        
+        .topology-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .topology-item {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">🤖 Autonomous Git</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="getting-started.html">Getting Started</a>
+                <a href="scl-bifm.html" class="active">SCL + BIFM</a>
+                <a href="https://github.com/elevate-foundry/salutations">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-scl">
+        <div class="container">
+            <h1 style="font-size: 3.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #00d9ff 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🔤 Semantic Compression Language
+            </h1>
+            <p style="font-size: 1.5rem; color: #a8dadc; margin-bottom: 2rem;">
+                Commits as compressed semantics, rendered in Braille, translated to any language
+            </p>
+            <div style="font-size: 4rem; margin: 2rem 0;">
+                ⠋⠊⠭.⠁⠥⠞⠓.⠑⠙⠛⠑.⣯
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: #0a0a0f;">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">🌍 Universal Commits</h2>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3 style="color: #00d9ff; margin-bottom: 1rem;">Same Semantics</h3>
+                    <div class="braille-display">
+                        <div style="color: #888;">SCL (Universal):</div>
+                        <span class="braille-char">⠋⠊⠭.⠁⠥⠞⠓.⠑⠙⠛⠑</span>
+                        <div style="color: #888; margin-top: 1rem;">Renders as:</div>
+                        <div style="color: #4ade80; margin: 0.5rem 0;">🇺🇸 fix: authentication edge case</div>
+                        <div style="color: #fbbf24; margin: 0.5rem 0;">🇪🇸 corregir: autenticación caso límite</div>
+                        <div style="color: #f87171; margin: 0.5rem 0;">🇨🇳 修复: 身份验证 边缘情况</div>
+                        <div style="color: #a78bfa; margin: 0.5rem 0;">🇯🇵 修正: 認証エッジケース</div>
+                    </div>
+                    <p style="color: #a8dadc; font-size: 0.9rem;">One semantic representation, infinite languages!</p>
+                </div>
+
+                <div class="demo-card">
+                    <h3 style="color: #8b5cf6; margin-bottom: 1rem;">📊 BIFM-64 Fitness</h3>
+                    <div class="braille-display">
+                        <div style="color: #888;">Fitness Topology:</div>
+                        <span class="braille-char">⣯</span>
+                        <div class="topology-grid">
+                            <div class="topology-item">
+                                <div style="color: #f87171; font-size: 2rem; font-weight: bold;">7</div>
+                                <div style="color: #888; font-size: 0.8rem;">κ (curvature)</div>
+                                <div style="color: #a8dadc; font-size: 0.9rem;">max deformation</div>
+                            </div>
+                            <div class="topology-item">
+                                <div style="color: #fbbf24; font-size: 2rem; font-weight: bold;">5</div>
+                                <div style="color: #888; font-size: 0.8rem;">σ (stability)</div>
+                                <div style="color: #a8dadc; font-size: 0.9rem;">high volatility</div>
+                            </div>
+                            <div class="topology-item">
+                                <div style="color: #f87171; font-size: 2rem; font-weight: bold;">3</div>
+                                <div style="color: #888; font-size: 0.8rem;">δ (direction)</div>
+                                <div style="color: #a8dadc; font-size: 0.9rem;">critical</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="color: #a8dadc; font-size: 0.9rem;">3D fitness in one Braille character!</p>
+                </div>
+
+                <div class="demo-card">
+                    <h3 style="color: #22c55e; margin-bottom: 1rem;">🚀 Complete Example</h3>
+                    <div class="braille-display">
+                        <div style="color: #22c55e;">$ agit --scl --lang es run</div>
+                        <div style="color: #888; margin-top: 1rem; font-size: 0.9rem;">
+                            👀 Detected changes...<br>
+                            📊 Fitness: 0.87<br><br>
+                            🔤 SCL: ⠥⠏⠙.⠙⠕⠉.⡁<br>
+                            🌍 actualizar: documentación<br>
+                            📊 κ=1 σ=0 δ=1<br><br>
+                            <span style="color: #4ade80;">🚀 COMMITTED: actualizar: documentación</span><br>
+                            <span style="color: #4ade80;">📤 PUSHED: origin/main</span>
+                        </div>
+                    </div>
+                    <p style="color: #a8dadc; font-size: 0.9rem;">Autonomous, semantic, universal!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">🎯 Why This Matters</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">♿</div>
+                    <h3 style="color: #00d9ff; margin-bottom: 0.5rem;">Accessible</h3>
+                    <p style="color: #a8dadc;">Braille-native format. Blind developers read commits in their native format, not as translations.</p>
+                </div>
+                
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌍</div>
+                    <h3 style="color: #8b5cf6; margin-bottom: 0.5rem;">Universal</h3>
+                    <p style="color: #a8dadc;">One semantic representation, any language. International teams work seamlessly.</p>
+                </div>
+                
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🤖</div>
+                    <h3 style="color: #22c55e; margin-bottom: 0.5rem;">AI-Friendly</h3>
+                    <p style="color: #a8dadc;">Compressed semantics are easier for LLMs to understand and reason about.</p>
+                </div>
+                
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                    <h3 style="color: #fbbf24; margin-bottom: 0.5rem;">Fitness-Aware</h3>
+                    <p style="color: #a8dadc;">Every commit carries its 3D fitness topology. Know the risk at a glance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: #0a0a0f;">
+        <div class="container" style="text-align: center;">
+            <h2 style="margin-bottom: 2rem; color: #00d9ff;">Ready to Try?</h2>
+            <div style="background: #0a0a0a; padding: 2rem; border-radius: 12px; max-width: 600px; margin: 0 auto; font-family: 'JetBrains Mono', monospace;">
+                <div style="color: #888; text-align: left;">$ cd rust</div>
+                <div style="color: #888; text-align: left;">$ cargo build --release</div>
+                <div style="color: #888; text-align: left; margin-top: 1rem;">$ ./target/release/agit --scl --lang es run</div>
+                <div style="color: #4ade80; text-align: left; margin-top: 1rem;">✅ SCL + BIFM-64 enabled!</div>
+            </div>
+            <div style="margin-top: 2rem;">
+                <a href="https://github.com/elevate-foundry/salutations" class="btn btn-primary" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #00d9ff 0%, #8b5cf6 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                    View on GitHub →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: #0a0a0f; padding: 2rem; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <p style="color: #888;">
+            Built with 🤖 by <a href="https://github.com/elevate-foundry" style="color: #00d9ff;">Elevate Foundry</a> | 
+            Part of the <a href="https://github.com/elevate-foundry/salutations" style="color: #00d9ff;">Salutations</a> project
+        </p>
+        <p style="margin-top: 1rem; font-size: 0.875rem; color: #666;">
+            SCL + BIFM-64 • Semantic Compression • Universal Accessibility
+        </p>
+    </footer>
+</body>
+</html>
