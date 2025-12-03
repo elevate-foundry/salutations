@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Fingerprinting</title>
+</head>
+<body>
+    <h1>Testing Device Fingerprinting</h1>
+    <div id="output"></div>
+    <script src="docs/js/fingerprint.js"></script>
+    <script>
+        // Test fingerprinting
+        setTimeout(() => {
+            const output = document.getElementById('output');
+            if (window.deviceFingerprint) {
+                output.innerHTML = '<h2>Fingerprint collected!</h2>';
+                output.innerHTML += '<p>Check browser console for details</p>';
+                output.innerHTML += '<p>Check localStorage for saved data</p>';
+                
+                // Show stored data
+                const stored = localStorage.getItem('salutations_visitors');
+                if (stored) {
+                    const visitors = JSON.parse(stored);
+                    output.innerHTML += `<p>Total stored visits: ${visitors.length}</p>`;
+                    if (visitors.length > 0) {
+                        const latest = visitors[visitors.length - 1];
+                        output.innerHTML += `<p>Latest visitor ID: ${latest.visitorId}</p>`;
+                    }
+                }
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
