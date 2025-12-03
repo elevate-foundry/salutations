@@ -2,6 +2,12 @@
 
 A language model system that braids multiple LLMs together with search capabilities via Playwright MCP and graph-based memory using Neo4j.
 
+## 🌐 NEW: Autonomous Git Website
+
+**Check out the live site!** [https://ryanbarrett.github.io/salutations/](https://ryanbarrett.github.io/salutations/)
+
+Learn about Autonomous Git - the AI-powered version control system that manages itself. See [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) for deployment instructions.
+
 ## 🚀 NEW: Automated Testing in 5 Minutes
 
 **Stop writing tests manually.** Let AI do it.
