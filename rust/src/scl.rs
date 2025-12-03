@@ -177,6 +177,7 @@ pub enum Language {
     Japanese,
     French,
     German,
+    Dutch,
 }
 
 /// Renders SCL commits in natural language
