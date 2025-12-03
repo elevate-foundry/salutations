@@ -318,7 +318,7 @@ cargo install autonomous-git
 ### GitHub Releases
 
 ```bash
-curl -L https://github.com/ryanbarrett/salutations/releases/latest/download/agit-macos -o agit
+curl -L https://github.com/elevate-foundry/salutations/releases/latest/download/agit-macos -o agit
 chmod +x agit
 sudo mv agit /usr/local/bin/
 ```

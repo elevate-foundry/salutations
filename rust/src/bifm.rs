@@ -153,6 +153,7 @@ impl FitnessTopology {
 }
 
 /// BIFM-64 complete table for reference
+#[allow(dead_code)]  // Reference documentation for BIFM encoding
 pub const BIFM_TABLE: &str = r#"
 BIFM-64 — Complete 8×8 Table (δ=0–3)
 

@@ -1,3 +1,4 @@
+use crate::fitness::CommitFitness;
 use ndarray::Array1;
 use std::collections::HashMap;
 
@@ -226,7 +227,7 @@ impl MetaBraider {
 
     /// The Core "Entanglement" Function
     /// Fuses the hidden states of experts into a single decision vector.
-    pub fn braid(&self, diff: &str) -> (f32, String, HashMap<String, f32>) {
+    pub fn braid(&self, diff: &str) -> CommitFitness {
         let mut states = Vec::new();
         let mut breakdown = HashMap::new();
 
@@ -253,17 +254,24 @@ impl MetaBraider {
         // Sigmoid activation to get 0.0 - 1.0
         let fitness_score = 1.0 / (1.0 + (-energy).exp());
 
-        let reasoning = if fitness_score > 0.8 {
-            "High semantic cohesion, valid syntax, and optimal complexity.".to_string()
+        // Create proper CommitFitness object
+        let mut fitness = CommitFitness::new(fitness_score);
+        fitness.set_breakdown(breakdown);
+        
+        if fitness_score > 0.8 {
+            fitness.add_reason("High semantic cohesion, valid syntax, and optimal complexity.".to_string());
         } else if fitness_score > 0.6 {
-            "Good changes, but could be improved with tests or docs.".to_string()
+            fitness.add_reason("Good changes, but could be improved with tests or docs.".to_string());
+            fitness.add_suggestion("Consider adding tests or documentation.".to_string());
         } else if fitness_score > 0.4 {
-            "Changes are ambiguous; waiting for more context.".to_string()
+            fitness.add_reason("Changes are ambiguous; waiting for more context.".to_string());
+            fitness.add_suggestion("Add more related changes to improve cohesion.".to_string());
         } else {
-            "Detected syntax issues, incomplete logic, or poor coherence.".to_string()
-        };
+            fitness.add_reason("Detected syntax issues, incomplete logic, or poor coherence.".to_string());
+            fitness.add_suggestion("Review syntax and ensure changes are complete.".to_string());
+        }
 
-        (fitness_score, reasoning, breakdown)
+        fitness
     }
 
     /// Update attention weights based on learning
@@ -314,7 +322,9 @@ mod tests {
     fn test_meta_braider() {
         let braider = MetaBraider::new();
         let diff = "MODIFIED: src/main.rs\nMODIFIED: src/lib.rs";
-        let (fitness, _, _) = braider.braid(diff);
-        assert!(fitness >= 0.0 && fitness <= 1.0);
+        let fitness_result = braider.braid(diff);
+        assert!(fitness_result.score >= 0.0 && fitness_result.score <= 1.0);
+        assert!(!fitness_result.reasons.is_empty());
+        assert!(!fitness_result.breakdown.is_empty());
     }
 }

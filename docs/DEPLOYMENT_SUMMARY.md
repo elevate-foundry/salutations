@@ -36,7 +36,7 @@
 ### Enable GitHub Pages (5 minutes)
 
 1. **Go to Repository Settings**
-   - Visit: https://github.com/ryanbarrett/salutations/settings
+   - Visit: https://github.com/elevate-foundry/salutations/settings
 
 2. **Navigate to Pages**
    - Click "Pages" in left sidebar

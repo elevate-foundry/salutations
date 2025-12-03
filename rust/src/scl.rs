@@ -13,10 +13,11 @@ pub struct BrailleToken(pub String);
 #[derive(Debug, Clone, PartialEq)]
 pub enum SemanticToken {
     // Actions
-    Fix,
     Add,
-    Remove,
     Update,
+    Fix,
+    #[allow(dead_code)]  // Will be used for file deletions
+    Remove,
     Refactor,
     
     // Domains
@@ -29,6 +30,7 @@ pub enum SemanticToken {
     // Modifiers
     EdgeCase,
     Feature,
+    #[allow(dead_code)]  // Will be used for bug fixes
     Bug,
     Enhancement,
 }

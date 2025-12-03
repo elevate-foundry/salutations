@@ -1,13 +1,12 @@
 use anyhow::{Context, Result};
 use chrono::Utc;
 use colored::*;
-use git2::{Repository, StatusOptions};
-use log::info;
-use std::collections::HashMap;
+use git2::{Repository, Status, StatusOptions};
+use log::{error, info, warn};
 use std::path::{Path, PathBuf};
 use tokio::time::{sleep, Duration};
 
-use crate::braider::MetaBraider;
+use crate::fitness_analyzer::{FitnessAnalyzer, FitnessReport, CommitDecision};
 use crate::fitness::{FitnessHistory, HistoricalCommit};
 use crate::scl::{SCLCommit, SemanticToken, LanguageRenderer, Language};
 use crate::bifm::FitnessTopology;
@@ -23,7 +22,7 @@ pub enum AgentAction {
 pub struct EntangledAgent {
     repo_path: PathBuf,
     repo: Repository,
-    braider: MetaBraider,
+    analyzer: FitnessAnalyzer,
     fitness_threshold: f32,
     commit_count: u64,
     ghost_mode_active: bool,
@@ -55,7 +54,7 @@ impl EntangledAgent {
         Ok(Self {
             repo_path: path.clone(),
             repo,
-            braider: MetaBraider::new(),
+            analyzer: FitnessAnalyzer::new(),
             fitness_threshold: threshold,
             commit_count: 0,
             ghost_mode_active: false,
@@ -120,24 +119,23 @@ impl EntangledAgent {
     }
 
     /// Calculate fitness score with detailed breakdown
-    pub fn calculate_fitness(&self, diff: &str) -> Result<(f32, String, HashMap<String, f32>)> {
-        let (fitness, reasoning, breakdown) = self.braider.braid(diff);
+    pub fn calculate_fitness(&self, diff: &str) -> Result<FitnessReport> {
+        let mut report = self.analyzer.calculate_fitness(diff);
         
         // Adjust based on historical learning
-        let adjusted_fitness = if self.history.commits.len() > 5 {
+        if self.history.commits.len() > 5 {
             let avg_files = self.history.average_file_count();
-            let current_files = diff.lines().count();
+            let current_files = diff.lines().filter(|l| l.starts_with("MODIFIED:") || l.starts_with("NEW:")).count();
             
             // Bonus if similar to historical patterns
             let file_similarity = 1.0 - ((current_files as f32 - avg_files).abs() / avg_files.max(1.0));
             let learning_bonus = file_similarity * 0.05;
             
-            (fitness + learning_bonus).min(1.0)
-        } else {
-            fitness
-        };
+            report.final_score = (report.final_score + learning_bonus).min(1.0);
+            report.add_component("historical_pattern", learning_bonus);
+        }
         
-        Ok((adjusted_fitness, reasoning, breakdown))
+        Ok(report)
     }
 
     /// The "Brain Loop": Calculates fitness and decides action
@@ -146,34 +144,43 @@ impl EntangledAgent {
             return Ok(AgentAction::Wait);
         }
 
-        // Ask the Braider
-        let (fitness, reason, breakdown) = self.braider.braid(diff);
-
+        // Use sophisticated fitness analyzer
+        let report = self.analyzer.calculate_fitness(diff);
+        
         println!(
-            "   {} Fitness: {:.2} | Reason: {}",
+            "   {} Fitness: {:.2}",
             "📊".purple(),
-            fitness,
-            reason
+            report.final_score
         );
-
-        // Show breakdown
-        println!("   {} Breakdown:", "🔍".cyan());
-        for (expert, score) in breakdown {
-            println!("     • {}: {:.2}", expert, score);
+        
+        // Show reasons
+        if !report.reasons.is_empty() {
+            println!("   {} {}", "💭".cyan(), report.reasons[0]);
         }
 
-        if fitness > self.fitness_threshold {
-            // High confidence -> Real Commit
-            let msg = self.generate_commit_message(diff)?;
-            Ok(AgentAction::Commit(msg))
-        } else if fitness > 0.4 {
-            // Medium confidence -> Ghost Commit (Save work, don't push)
-            Ok(AgentAction::GhostCommit)
-        } else if diff.len() > 5000 {
-            // Too big -> Split
-            Ok(AgentAction::Split)
-        } else {
-            Ok(AgentAction::Wait)
+        // Show component breakdown
+        println!("   {} Breakdown:", "🔍".cyan());
+        println!("     • File metrics: {:.2}", report.components.get("file_metrics").unwrap_or(&0.0));
+        println!("     • Code complexity: {:.2}", report.components.get("complexity").unwrap_or(&0.0));
+        println!("     • Coherence: {:.2}", report.components.get("coherence").unwrap_or(&0.0));
+        println!("     • Tests: {:.2}", report.components.get("tests").unwrap_or(&0.0));
+        println!("     • Risk: {:.2}", report.components.get("risk").unwrap_or(&0.0));
+        println!("     • Documentation: {:.2}", report.components.get("documentation").unwrap_or(&0.0));
+        
+        // Show suggestions
+        for suggestion in &report.suggestions {
+            println!("     💡 {}", suggestion.yellow());
+        }
+
+        // Convert decision to action
+        match report.decision {
+            CommitDecision::Commit => {
+                let msg = self.generate_commit_message(diff)?;
+                Ok(AgentAction::Commit(msg))
+            },
+            CommitDecision::Ghost => Ok(AgentAction::GhostCommit),
+            CommitDecision::Split => Ok(AgentAction::Split),
+            CommitDecision::Wait => Ok(AgentAction::Wait),
         }
     }
 
@@ -235,7 +242,7 @@ impl EntangledAgent {
             || diff.contains("!:");
         
         // Get current fitness score
-        let (fitness_score, _, _) = self.braider.braid(diff);
+        let fitness_score = self.analyzer.calculate_fitness(diff).final_score;
         
         Ok(FitnessTopology::from_analysis(
             file_count,
@@ -402,11 +409,12 @@ impl EntangledAgent {
         use chrono::Utc;
 
         // Calculate fitness for this commit
-        let (fitness, _, _) = self.braider.braid(analysis);
+        let fitness_report = self.analyzer.calculate_fitness(analysis);
+        let fitness = fitness_report.final_score;
         
         // Count files
-        let file_count = analysis.lines().count();
-
+        let file_count = analysis.lines().filter(|l| l.starts_with("MODIFIED:") || l.starts_with("NEW:")).count();
+        
         // Add to history
         let commit = HistoricalCommit {
             timestamp: Utc::now().to_rfc3339(),
@@ -485,7 +493,10 @@ impl EntangledAgent {
     }
 
     /// Execute a Ghost Commit (Hidden ref)
-    pub fn execute_ghost_commit(&self) -> Result<()> {
+    pub fn execute_ghost_commit(&mut self) -> Result<()> {
+        // Enable ghost mode when making ghost commits
+        self.ghost_mode_active = true;
+        
         // In a real app, this would commit to a ref like 'refs/ghosts/wip'
         println!(
             "{} {}",

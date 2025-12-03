@@ -7,11 +7,14 @@ use std::path::PathBuf;
 mod agent;
 mod braider;
 mod fitness;
+mod fitness_analyzer;
 mod daemon;
 mod scl;
 mod bifm;
+mod tests;
 
 use agent::EntangledAgent;
+use fitness_analyzer::FitnessReport;
 
 /// Autonomous Git - Git that manages itself
 #[derive(Parser)]
@@ -156,27 +159,41 @@ async fn check_fitness(repo_path: &PathBuf) -> Result<()> {
         return Ok(());
     }
 
-    let (fitness, reasoning, breakdown) = agent.calculate_fitness(&analysis)?;
+    let report = agent.calculate_fitness(&analysis)?;
 
     println!("\n{}", "📊 FITNESS REPORT".purple().bold());
-    println!("   Score: {:.2} / 1.00", fitness);
-    println!("   Threshold: 0.70");
+    println!("   Score: {:.2} / 1.00", report.final_score);
+    println!("   Threshold: {:.2}", 0.70);
     
     // Visual progress bar
     let bar_length = 20;
-    let filled = (fitness * bar_length as f32) as usize;
+    let filled = (report.final_score * bar_length as f32) as usize;
     let bar = "█".repeat(filled) + &"░".repeat(bar_length - filled);
-    println!("   [{}] {:.0}%", bar, fitness * 100.0);
+    println!("   [{}] {:.0}%", bar, report.final_score * 100.0);
 
-    println!("\n{}", "   Breakdown:".cyan());
-    for (factor, score) in breakdown {
-        println!("     • {}: {:.2}", factor, score);
+    println!("\n{}", "   Component Breakdown:".cyan());
+    println!("     • File metrics: {:.2}", report.components.get("file_metrics").unwrap_or(&0.0));
+    println!("     • Code complexity: {:.2}", report.components.get("complexity").unwrap_or(&0.0));
+    println!("     • Coherence: {:.2}", report.components.get("coherence").unwrap_or(&0.0));
+    println!("     • Tests: {:.2}", report.components.get("tests").unwrap_or(&0.0));
+    println!("     • Risk: {:.2}", report.components.get("risk").unwrap_or(&0.0));
+    println!("     • Documentation: {:.2}", report.components.get("documentation").unwrap_or(&0.0));
+
+    if !report.reasons.is_empty() {
+        println!("\n{}", "   Analysis:".cyan());
+        for reason in &report.reasons {
+            println!("   • {}", reason);
+        }
+    }
+    
+    if !report.suggestions.is_empty() {
+        println!("\n{}", "   Suggestions:".yellow());
+        for suggestion in &report.suggestions {
+            println!("   💡 {}", suggestion);
+        }
     }
 
-    println!("\n{}", "   Reasoning:".cyan());
-    println!("     {}", reasoning);
-
-    if fitness >= 0.7 {
+    if report.final_score >= 0.7 {
         println!("\n{}", "✅ Ready to commit!".green().bold());
     } else {
         println!("\n{}", "⏳ Waiting for better fitness...".yellow());
