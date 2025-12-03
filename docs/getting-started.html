@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - Autonomous Git</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">🤖 Autonomous Git</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="getting-started.html" class="active">Getting Started</a>
+                <a href="https://github.com/ryanbarrett/salutations">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="docs-layout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <h3>Getting Started</h3>
+                <ul>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#quick-start">Quick Start</a></li>
+                    <li><a href="#basic-usage">Basic Usage</a></li>
+                    <li><a href="#daemon">Running as Daemon</a></li>
+                </ul>
+                <h3>Features</h3>
+                <ul>
+                    <li><a href="#fitness">Fitness Functions</a></li>
+                    <li><a href="#commit-messages">Commit Messages</a></li>
+                    <li><a href="#branching">Smart Branching</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="docs-content">
+            <h1>Getting Started</h1>
+            <p class="lead">Install Autonomous Git and start letting AI handle your version control in minutes.</p>
+
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>Clone the Salutations repository and install dependencies:</p>
+                <div class="code-block">
+                    <pre><code>git clone https://github.com/ryanbarrett/salutations.git
+cd salutations
+pip install -r requirements.txt</code></pre>
+                </div>
+            </section>
+
+            <section id="quick-start">
+                <h2>Quick Start</h2>
+                <p>Try the autonomous Git agent in your repository:</p>
+                <div class="code-block">
+                    <pre><code>from pathlib import Path
+from examples.autonomous_git_agent import AutonomousGitAgent
+
+# Initialize agent
+agent = AutonomousGitAgent(Path.cwd())
+
+# Let agent decide if you should commit
+agent.auto_commit()
+
+# Agent will:
+# ✓ Analyze your changes
+# ✓ Calculate fitness score
+# ✓ Generate commit message
+# ✓ Commit if fitness is high enough</code></pre>
+                </div>
+            </section>
+
+            <section id="basic-usage">
+                <h2>Basic Usage</h2>
+                
+                <h3>Auto Commit</h3>
+                <p>Let the agent decide when to commit based on fitness:</p>
+                <div class="code-block">
+                    <pre><code>agent.auto_commit()  # Commits if fitness > 0.5</code></pre>
+                </div>
+
+                <h3>Force Commit</h3>
+                <p>Commit regardless of fitness score:</p>
+                <div class="code-block">
+                    <pre><code>agent.auto_commit(force=True)</code></pre>
+                </div>
+
+                <h3>Smart Branching</h3>
+                <p>Let agent suggest and create branches:</p>
+                <div class="code-block">
+                    <pre><code># Agent suggests branch strategy
+strategy = agent.suggest_branch_strategy("fix login bug")
+# Returns: fix/fix-login-bug with squash merge strategy
+
+# Auto-create and switch to branch
+branch = agent.auto_branch("add user authentication")
+# Creates: feature/add-user-authentication</code></pre>
+                </div>
+
+                <h3>Auto Merge</h3>
+                <p>Merge with intelligent strategy selection:</p>
+                <div class="code-block">
+                    <pre><code>agent.auto_merge("feature/new-feature", "main")
+# Agent chooses best merge strategy
+# Resolves conflicts automatically</code></pre>
+                </div>
+            </section>
+
+            <section id="daemon">
+                <h2>Running as Daemon</h2>
+                <p>Install as a background service that runs 24/7:</p>
+                
+                <h3>Install Service</h3>
+                <div class="code-block">
+                    <pre><code>python examples/git_daemon.py --install --repo /path/to/repo</code></pre>
+                </div>
+
+                <h3>Configuration Options</h3>
+                <div class="code-block">
+                    <pre><code># Check every 5 minutes (default)
+--interval 300
+
+# Auto-commit threshold (0-1)
+--threshold 0.7
+
+# Real-time mode (1 second interval)
+--realtime</code></pre>
+                </div>
+
+                <h3>Control Commands</h3>
+                <div class="code-block">
+                    <pre><code># Start daemon
+launchctl start com.salutations.git-daemon
+
+# Stop daemon
+launchctl stop com.salutations.git-daemon
+
+# View logs
+tail -f .git/daemon.log
+
+# Uninstall
+python examples/git_daemon.py --uninstall</code></pre>
+                </div>
+            </section>
+
+            <section id="fitness">
+                <h2>Fitness Functions</h2>
+                <p>The agent uses a fitness function to determine commit quality:</p>
+                
+                <div class="fitness-factors">
+                    <div class="factor-card">
+                        <h4>📁 File Count (30%)</h4>
+                        <p>Sweet spot: 3-7 files. Too few or too many reduces fitness.</p>
+                    </div>
+                    <div class="factor-card">
+                        <h4>🎯 Cohesion (20%)</h4>
+                        <p>Related files (same directory/type) increase fitness.</p>
+                    </div>
+                    <div class="factor-card">
+                        <h4>🧪 Tests (20%)</h4>
+                        <p>Including test files significantly boosts fitness.</p>
+                    </div>
+                    <div class="factor-card">
+                        <h4>📝 Documentation (15%)</h4>
+                        <p>Updated docs show thoroughness.</p>
+                    </div>
+                    <div class="factor-card">
+                        <h4>📍 Localization (15%)</h4>
+                        <p>Changes in few directories indicate focus.</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h4>Example Fitness Calculation</h4>
+                    <div class="code-block">
+                        <pre><code>Changes: 5 files, same directory, includes tests
+Fitness: 0.85 ✅ COMMIT NOW
+
+Changes: 1 file, no tests
+Fitness: 0.25 ⏳ WAIT
+
+Changes: 20 files, multiple directories
+Fitness: 0.35 ⚠️ TOO LARGE</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="commit-messages">
+                <h2>AI Commit Messages</h2>
+                <p>Agent generates semantic commit messages automatically:</p>
+                
+                <div class="code-block">
+                    <pre><code>✨ feat: update authentication (3 files)
+
+- auth.py
+- login.py
+- test_auth.py</code></pre>
+                </div>
+
+                <p>Message types:</p>
+                <ul>
+                    <li><strong>feat</strong> ✨ - New features</li>
+                    <li><strong>fix</strong> 🐛 - Bug fixes</li>
+                    <li><strong>docs</strong> 📝 - Documentation</li>
+                    <li><strong>test</strong> 🧪 - Tests</li>
+                    <li><strong>chore</strong> 🔧 - Maintenance</li>
+                </ul>
+            </section>
+
+            <section id="branching">
+                <h2>Smart Branching</h2>
+                <p>Agent suggests branch names and merge strategies:</p>
+                
+                <table class="strategy-table">
+                    <thead>
+                        <tr>
+                            <th>Task Type</th>
+                            <th>Branch Prefix</th>
+                            <th>Merge Strategy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Bug Fix</td>
+                            <td><code>fix/</code></td>
+                            <td>Squash</td>
+                        </tr>
+                        <tr>
+                            <td>New Feature</td>
+                            <td><code>feature/</code></td>
+                            <td>Merge</td>
+                        </tr>
+                        <tr>
+                            <td>Refactoring</td>
+                            <td><code>refactor/</code></td>
+                            <td>Rebase</td>
+                        </tr>
+                        <tr>
+                            <td>Documentation</td>
+                            <td><code>docs/</code></td>
+                            <td>Squash</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <div class="next-steps">
+                <h2>Next Steps</h2>
+                <div class="step-cards">
+                    <a href="https://github.com/ryanbarrett/salutations" class="step-card">
+                        <h3>📚 Read the Docs</h3>
+                        <p>Explore AUTONOMOUS_GIT.md and GIT_DAEMON.md</p>
+                    </a>
+                    <a href="https://github.com/ryanbarrett/salutations/tree/main/examples" class="step-card">
+                        <h3>💻 Try Examples</h3>
+                        <p>Run autonomous_git_agent.py and git_daemon.py</p>
+                    </a>
+                    <a href="https://github.com/ryanbarrett/salutations/issues" class="step-card">
+                        <h3>🤝 Contribute</h3>
+                        <p>Help improve Autonomous Git</p>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>
+            Built with 🤖 by <a href="https://github.com/ryanbarrett">Ryan Barrett</a> | 
+            Part of the <a href="https://github.com/ryanbarrett/salutations">Salutations</a> project
+        </p>
+    </footer>
+</body>
+</html>
