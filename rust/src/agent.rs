@@ -9,6 +9,7 @@ use tokio::time::{sleep, Duration};
 
 use crate::braider::MetaBraider;
 use crate::fitness::{CommitFitness, FitnessHistory, HistoricalCommit};
+use crate::scl::{SCLCommit, SemanticToken, LanguageRenderer, Language};
 
 #[derive(Debug, PartialEq)]
 pub enum AgentAction {

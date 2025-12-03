@@ -9,6 +9,7 @@ mod agent;
 mod braider;
 mod fitness;
 mod daemon;
+mod scl;
 
 use agent::EntangledAgent;
 
