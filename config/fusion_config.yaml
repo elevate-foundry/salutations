@@ -1,0 +1,30 @@
+# Fusion layer training configuration
+
+# Training hyperparameters
+batch_size: 4
+learning_rate: 5e-5
+num_epochs: 3
+max_length: 512
+weight_decay: 0.01
+max_grad_norm: 1.0
+
+# Checkpointing
+save_steps: 500
+checkpoint_dir: ./checkpoints
+
+# Data
+num_workers: 2
+train_data_path: ./data/train.txt
+val_data_path: ./data/val.txt
+
+# Model
+fusion_strategy: learned_weighted  # learned_weighted, attention, router
+fusion_layers: [0, 4, 8, 12, 16, 20]  # Which layers to fuse at
+
+# Optimization
+warmup_ratio: 0.1
+gradient_accumulation_steps: 1
+
+# Logging
+log_steps: 10
+eval_steps: 100

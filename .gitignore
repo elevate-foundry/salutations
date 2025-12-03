@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Environment
+.env
+.env.local
+*.env.backup
+
+# Logs
+logs/
+*.log
+
+# Model checkpoints
+checkpoints/
+*.pt
+*.pth
+
+# Data
+data/
+evidence/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+mcp/dist/
+
+# Neo4j
+neo4j_data/
