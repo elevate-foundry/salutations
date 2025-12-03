@@ -2,6 +2,16 @@
 
 A language model system that braids multiple LLMs together with search capabilities via Playwright MCP and graph-based memory using Neo4j.
 
+## 🚀 NEW: Automated Testing in 5 Minutes
+
+**Stop writing tests manually.** Let AI do it.
+
+```bash
+./test_it_now.sh https://your-app.com
+```
+
+See [README_TESTING.md](README_TESTING.md) for details.
+
 ## Architecture
 
 ```
