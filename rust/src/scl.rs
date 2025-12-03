@@ -243,6 +243,42 @@ impl LanguageRenderer {
         chinese.insert("Enhancement".to_string(), "增强".to_string());
         templates.insert(Language::Chinese, chinese);
         
+        // German templates
+        let mut german = HashMap::new();
+        german.insert("Fix".to_string(), "beheben".to_string());
+        german.insert("Add".to_string(), "hinzufügen".to_string());
+        german.insert("Remove".to_string(), "entfernen".to_string());
+        german.insert("Update".to_string(), "aktualisieren".to_string());
+        german.insert("Refactor".to_string(), "umstrukturieren".to_string());
+        german.insert("Authentication".to_string(), "Authentifizierung".to_string());
+        german.insert("Security".to_string(), "Sicherheit".to_string());
+        german.insert("Performance".to_string(), "Leistung".to_string());
+        german.insert("Testing".to_string(), "Testen".to_string());
+        german.insert("Documentation".to_string(), "Dokumentation".to_string());
+        german.insert("EdgeCase".to_string(), "Grenzfall".to_string());
+        german.insert("Feature".to_string(), "Funktion".to_string());
+        german.insert("Bug".to_string(), "Fehler".to_string());
+        german.insert("Enhancement".to_string(), "Verbesserung".to_string());
+        templates.insert(Language::German, german);
+        
+        // Dutch templates
+        let mut dutch = HashMap::new();
+        dutch.insert("Fix".to_string(), "oplossen".to_string());
+        dutch.insert("Add".to_string(), "toevoegen".to_string());
+        dutch.insert("Remove".to_string(), "verwijderen".to_string());
+        dutch.insert("Update".to_string(), "bijwerken".to_string());
+        dutch.insert("Refactor".to_string(), "herstructureren".to_string());
+        dutch.insert("Authentication".to_string(), "authenticatie".to_string());
+        dutch.insert("Security".to_string(), "beveiliging".to_string());
+        dutch.insert("Performance".to_string(), "prestatie".to_string());
+        dutch.insert("Testing".to_string(), "testen".to_string());
+        dutch.insert("Documentation".to_string(), "documentatie".to_string());
+        dutch.insert("EdgeCase".to_string(), "randgeval".to_string());
+        dutch.insert("Feature".to_string(), "functie".to_string());
+        dutch.insert("Bug".to_string(), "fout".to_string());
+        dutch.insert("Enhancement".to_string(), "verbetering".to_string());
+        templates.insert(Language::Dutch, dutch);
+        
         Self { templates }
     }
     

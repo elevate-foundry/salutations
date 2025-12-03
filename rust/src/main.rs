@@ -38,7 +38,7 @@ struct Cli {
     #[arg(long)]
     scl: bool,
 
-    /// Language for SCL rendering (en, es, zh, ja, fr, de)
+    /// Language for SCL rendering (en, es, zh, ja, fr, de, nl)
     #[arg(long, default_value = "en")]
     lang: String,
 
@@ -124,6 +124,7 @@ async fn run_agent(
         "ja" => Language::Japanese,
         "fr" => Language::French,
         "de" => Language::German,
+        "nl" => Language::Dutch,
         _ => Language::English,
     };
     
