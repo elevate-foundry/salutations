@@ -103,6 +103,7 @@ The SCL is preserved! Any tool can parse it and render in any language.
 - `--lang ja` - Japanese
 - `--lang fr` - French
 - `--lang de` - German
+- `--lang nl` - Dutch
 
 ## 🔤 Semantic Tokens
 
