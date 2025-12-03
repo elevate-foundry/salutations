@@ -1,14 +1,14 @@
 use anyhow::{Context, Result};
 use chrono::Utc;
 use colored::*;
-use git2::{Repository, Status, StatusOptions};
-use log::{error, info, warn};
+use git2::{Repository, StatusOptions};
+use log::info;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use tokio::time::{sleep, Duration};
 
 use crate::braider::MetaBraider;
-use crate::fitness::{CommitFitness, FitnessHistory, HistoricalCommit};
+use crate::fitness::{FitnessHistory, HistoricalCommit};
 use crate::scl::{SCLCommit, SemanticToken, LanguageRenderer, Language};
 use crate::bifm::FitnessTopology;
 
@@ -125,7 +125,6 @@ impl EntangledAgent {
         
         // Adjust based on historical learning
         let adjusted_fitness = if self.history.commits.len() > 5 {
-            let avg_fitness = self.history.average_fitness();
             let avg_files = self.history.average_file_count();
             let current_files = diff.lines().count();
             

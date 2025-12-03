@@ -1,0 +1,11 @@
+/Users/ryanbarrett/salutations/rust/target/debug/deps/libnotify-9ed8e576e782b309.rmeta: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/fsevent.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/event.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/null.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/poll.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/config.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/error.rs
+
+/Users/ryanbarrett/salutations/rust/target/debug/deps/notify-9ed8e576e782b309.d: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/fsevent.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/event.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/null.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/poll.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/config.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/error.rs
+
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/lib.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/fsevent.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/event.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/null.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/poll.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/config.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/notify-6.1.1/src/error.rs:

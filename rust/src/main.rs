@@ -1,8 +1,7 @@
 use anyhow::{Context, Result};
-use chrono::Utc;
 use clap::{Parser, Subcommand};
 use colored::*;
-use log::{error, info, warn};
+use log::info;
 use std::path::PathBuf;
 
 mod agent;

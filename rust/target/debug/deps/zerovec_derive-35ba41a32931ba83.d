@@ -1,0 +1,10 @@
+/Users/ryanbarrett/salutations/rust/target/debug/deps/libzerovec_derive-35ba41a32931ba83.dylib: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/make_ule.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/make_varule.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/ule.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/utils.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/varule.rs
+
+/Users/ryanbarrett/salutations/rust/target/debug/deps/zerovec_derive-35ba41a32931ba83.d: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/make_ule.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/make_varule.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/ule.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/utils.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/varule.rs
+
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/lib.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/make_ule.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/make_varule.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/ule.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/utils.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerovec-derive-0.11.2/src/varule.rs:

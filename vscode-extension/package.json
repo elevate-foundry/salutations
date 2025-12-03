@@ -1,0 +1,156 @@
+{
+  "name": "autonomous-git",
+  "displayName": "Autonomous Git",
+  "description": "Git that manages itself with SCL and BIFM-64 fitness topology",
+  "version": "0.1.0",
+  "publisher": "elevate-foundry",
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Machine Learning",
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "autonomous",
+    "ai",
+    "scl",
+    "bifm",
+    "braille",
+    "semantic",
+    "fitness"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "autonomousGit.start",
+        "title": "Autonomous Git: Start Agent",
+        "icon": "$(robot)"
+      },
+      {
+        "command": "autonomousGit.stop",
+        "title": "Autonomous Git: Stop Agent",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "autonomousGit.checkFitness",
+        "title": "Autonomous Git: Check Fitness",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "autonomousGit.viewGraph",
+        "title": "Autonomous Git: View BIFM Graph",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "autonomousGit.enableSCL",
+        "title": "Autonomous Git: Enable SCL Mode",
+        "icon": "$(symbol-text)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "autonomous-git",
+          "title": "Autonomous Git",
+          "icon": "$(robot)"
+        }
+      ]
+    },
+    "views": {
+      "autonomous-git": [
+        {
+          "id": "autonomousGit.status",
+          "name": "Agent Status"
+        },
+        {
+          "id": "autonomousGit.fitness",
+          "name": "Fitness Topology"
+        },
+        {
+          "id": "autonomousGit.history",
+          "name": "Commit History"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Autonomous Git",
+      "properties": {
+        "autonomousGit.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable autonomous Git agent"
+        },
+        "autonomousGit.threshold": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Fitness threshold for auto-commit"
+        },
+        "autonomousGit.interval": {
+          "type": "number",
+          "default": 300,
+          "description": "Check interval in seconds"
+        },
+        "autonomousGit.autoPush": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically push commits"
+        },
+        "autonomousGit.sclEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use Semantic Compression Language (SCL)"
+        },
+        "autonomousGit.language": {
+          "type": "string",
+          "default": "en",
+          "enum": ["en", "es", "zh", "ja", "fr", "de"],
+          "description": "Language for SCL rendering"
+        },
+        "autonomousGit.neo4jUri": {
+          "type": "string",
+          "default": "bolt://localhost:7687",
+          "description": "Neo4j database URI"
+        },
+        "autonomousGit.neo4jUser": {
+          "type": "string",
+          "default": "neo4j",
+          "description": "Neo4j username"
+        },
+        "autonomousGit.neo4jPassword": {
+          "type": "string",
+          "default": "",
+          "description": "Neo4j password"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.x",
+    "@typescript-eslint/eslint-plugin": "^6.x",
+    "@typescript-eslint/parser": "^6.x",
+    "eslint": "^8.x",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "neo4j-driver": "^5.15.0"
+  }
+}

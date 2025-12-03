@@ -1,4 +1,4 @@
-use ndarray::{Array1, Array2};
+use ndarray::Array1;
 use std::collections::HashMap;
 
 /// Represents the "Hidden State" of an LLM (a vector of floating point numbers).
