@@ -35,51 +35,58 @@ class LearnedWeightedFusion(FusionLayer):
     the contribution of each model.
     """
     
-    def __init__(self, num_models: int, hidden_dim: int, normalize: bool = True):
+    def __init__(self, input_dims: List[int], output_dim: int, normalize: bool = True):
         """
         Initialize learned weighted fusion.
         
         Args:
-            num_models: Number of models to fuse
-            hidden_dim: Hidden dimension size
+            input_dims: List of input dimensions from each model
+            output_dim: Output dimension
             normalize: Whether to normalize weights with softmax
         """
         super().__init__()
         
-        self.num_models = num_models
-        self.hidden_dim = hidden_dim
+        self.num_models = len(input_dims)
+        self.input_dims = input_dims
+        self.output_dim = output_dim
         self.normalize = normalize
         
         # Learnable weights for each model
-        self.weights = nn.Parameter(torch.ones(num_models) / num_models)
+        self.weights = nn.Parameter(torch.ones(self.num_models) / self.num_models)
         
-        # Optional projection layer to align dimensions
-        self.projection = nn.Linear(hidden_dim, hidden_dim)
+        # Projection layers to align dimensions if needed
+        self.projections = nn.ModuleList([
+            nn.Linear(in_dim, output_dim) if in_dim != output_dim else nn.Identity()
+            for in_dim in input_dims
+        ])
     
     def forward(self, hidden_states: List[torch.Tensor]) -> torch.Tensor:
         """
         Fuse hidden states with learned weights.
         
         Args:
-            hidden_states: List of tensors (batch, seq_len, hidden_dim)
+            hidden_states: List of tensors (batch, hidden_dim) or (batch, seq_len, hidden_dim)
         
         Returns:
-            Fused tensor (batch, seq_len, hidden_dim)
+            Fused tensor with output_dim
         """
         assert len(hidden_states) == self.num_models, \
-            f"Expected {self.num_models} hidden states, got {len(hidden_states)}"
+            f"Expected {self.num_models} models, got {len(hidden_states)}"
         
         # Normalize weights if requested
         if self.normalize:
-            weights = F.softmax(self.weights, dim=0)
+            weights = torch.softmax(self.weights, dim=0)
         else:
             weights = self.weights
         
-        # Weighted sum
-        fused = sum(w * h for w, h in zip(weights, hidden_states))
-        
-        # Optional projection
-        fused = self.projection(fused)
+        # Project each input to output dimension and apply weighted sum
+        fused = None
+        for i, (hidden, weight, projection) in enumerate(zip(hidden_states, weights, self.projections)):
+            projected = projection(hidden)
+            if fused is None:
+                fused = weight * projected
+            else:
+                fused += weight * projected
         
         return fused
 
@@ -93,7 +100,8 @@ class AttentionFusion(FusionLayer):
     
     def __init__(
         self,
-        hidden_dim: int,
+        input_dims: List[int],
+        output_dim: int,
         num_heads: int = 8,
         dropout: float = 0.1,
     ):
@@ -101,39 +109,48 @@ class AttentionFusion(FusionLayer):
         Initialize attention fusion.
         
         Args:
-            hidden_dim: Hidden dimension size
+            input_dims: List of input dimensions from each model
+            output_dim: Output dimension
             num_heads: Number of attention heads
             dropout: Dropout probability
         """
         super().__init__()
         
-        self.hidden_dim = hidden_dim
+        self.num_models = len(input_dims)
+        self.input_dims = input_dims
+        self.output_dim = output_dim
         self.num_heads = num_heads
-        self.head_dim = hidden_dim // num_heads
+        self.head_dim = output_dim // num_heads
         
-        assert hidden_dim % num_heads == 0, "hidden_dim must be divisible by num_heads"
+        assert output_dim % num_heads == 0, "output_dim must be divisible by num_heads"
+        
+        # Projections to align input dimensions
+        self.projections = nn.ModuleList([
+            nn.Linear(in_dim, output_dim) if in_dim != output_dim else nn.Identity()
+            for in_dim in input_dims
+        ])
         
         # Multi-head attention
         self.attention = nn.MultiheadAttention(
-            embed_dim=hidden_dim,
+            embed_dim=output_dim,
             num_heads=num_heads,
             dropout=dropout,
             batch_first=True,
         )
         
         # Layer norm
-        self.layer_norm = nn.LayerNorm(hidden_dim)
+        self.layer_norm = nn.LayerNorm(output_dim)
         
         # Feed-forward network
         self.ffn = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim * 4),
+            nn.Linear(output_dim, output_dim * 4),
             nn.GELU(),
             nn.Dropout(dropout),
-            nn.Linear(hidden_dim * 4, hidden_dim),
+            nn.Linear(output_dim * 4, output_dim),
             nn.Dropout(dropout),
         )
         
-        self.ffn_layer_norm = nn.LayerNorm(hidden_dim)
+        self.ffn_layer_norm = nn.LayerNorm(output_dim)
     
     def forward(self, hidden_states: List[torch.Tensor]) -> torch.Tensor:
         """
@@ -145,12 +162,15 @@ class AttentionFusion(FusionLayer):
         Returns:
             Fused tensor (batch, seq_len, hidden_dim)
         """
-        # Use first model as query, concatenate others as key/value
-        query = hidden_states[0]
+        # Project inputs to same dimension
+        projected_states = [proj(h) for h, proj in zip(hidden_states, self.projections)]
         
-        if len(hidden_states) > 1:
+        # Use first model as query, concatenate others as key/value
+        query = projected_states[0]
+        
+        if len(projected_states) > 1:
             # Concatenate other models along sequence dimension
-            key_value = torch.cat(hidden_states[1:], dim=1)
+            key_value = torch.cat(projected_states[1:], dim=-2) if projected_states[0].dim() == 3 else torch.cat(projected_states[1:], dim=0)
         else:
             key_value = query
         
@@ -175,8 +195,10 @@ class RouterFusion(FusionLayer):
     
     def __init__(
         self,
-        num_models: int,
-        hidden_dim: int,
+        input_dims: List[int],
+        output_dim: int,
+        num_experts: int = None,
+        top_k: int = 2,
         router_hidden_dim: int = 256,
         temperature: float = 1.0,
     ):
@@ -184,33 +206,44 @@ class RouterFusion(FusionLayer):
         Initialize router fusion.
         
         Args:
-            num_models: Number of models to route between
-            hidden_dim: Hidden dimension size
+            input_dims: List of input dimensions from each model
+            output_dim: Output dimension
+            num_experts: Number of experts (defaults to number of models)
+            top_k: Number of top experts to use
             router_hidden_dim: Hidden dimension for router network
             temperature: Temperature for softmax routing
         """
         super().__init__()
         
-        self.num_models = num_models
-        self.hidden_dim = hidden_dim
+        self.num_models = len(input_dims)
+        self.input_dims = input_dims
+        self.output_dim = output_dim
+        self.num_experts = num_experts or self.num_models
+        self.top_k = min(top_k, self.num_experts)
         self.temperature = temperature
+        
+        # Projections to align input dimensions
+        self.input_projections = nn.ModuleList([
+            nn.Linear(in_dim, output_dim) if in_dim != output_dim else nn.Identity()
+            for in_dim in input_dims
+        ])
         
         # Router network
         self.router = nn.Sequential(
-            nn.Linear(hidden_dim, router_hidden_dim),
+            nn.Linear(output_dim, router_hidden_dim),
             nn.ReLU(),
             nn.Dropout(0.1),
-            nn.Linear(router_hidden_dim, num_models),
+            nn.Linear(router_hidden_dim, self.num_experts),
         )
         
         # Optional expert-specific projections
         self.expert_projections = nn.ModuleList([
-            nn.Linear(hidden_dim, hidden_dim)
-            for _ in range(num_models)
+            nn.Linear(output_dim, output_dim)
+            for _ in range(self.num_experts)
         ])
         
         # Final projection
-        self.output_projection = nn.Linear(hidden_dim, hidden_dim)
+        self.output_projection = nn.Linear(output_dim, output_dim)
     
     def forward(
         self,
@@ -230,28 +263,34 @@ class RouterFusion(FusionLayer):
         """
         assert len(hidden_states) == self.num_models
         
-        batch_size, seq_len, _ = hidden_states[0].shape
+        # Project inputs
+        projected_states = [proj(h) for h, proj in zip(hidden_states, self.input_projections)]
+        
+        # Handle both 2D and 3D tensors
+        if projected_states[0].dim() == 3:
+            batch_size, seq_len, _ = projected_states[0].shape
+        else:
+            batch_size = projected_states[0].shape[0]
+            seq_len = 1  # Treat as single sequence
         
         # Compute routing weights based on average of all models
-        avg_hidden = torch.stack(hidden_states).mean(dim=0)
+        avg_hidden = torch.stack(projected_states).mean(dim=0)
         routing_logits = self.router(avg_hidden)  # (batch, seq_len, num_models)
         routing_weights = F.softmax(routing_logits / self.temperature, dim=-1)
         
-        # Apply expert projections
-        projected_states = [
-            proj(h) for proj, h in zip(self.expert_projections, hidden_states)
-        ]
-        
-        # Weighted combination
-        # routing_weights: (batch, seq_len, num_models)
-        # projected_states: list of (batch, seq_len, hidden_dim)
-        stacked = torch.stack(projected_states, dim=-1)  # (batch, seq_len, hidden_dim, num_models)
-        routing_weights_expanded = routing_weights.unsqueeze(2)  # (batch, seq_len, 1, num_models)
-        
-        fused = (stacked * routing_weights_expanded).sum(dim=-1)  # (batch, seq_len, hidden_dim)
+        # Apply expert projections and combine (simplified for now)
+        output = torch.zeros_like(projected_states[0])
+        for i in range(min(self.num_models, self.num_experts)):
+            expert_output = self.expert_projections[i](projected_states[i])
+            # Expand routing weights to match hidden dimensions
+            if projected_states[0].dim() == 3:
+                weights = routing_weights[..., i:i+1]  # (batch, seq_len, 1)
+            else:
+                weights = routing_weights[:, i:i+1]  # (batch, 1)
+            output += weights * expert_output
         
         # Final projection
-        output = self.output_projection(fused)
+        output = self.output_projection(output)
         
         if return_routing_weights:
             return output, routing_weights
@@ -267,62 +306,68 @@ class HierarchicalFusion(FusionLayer):
     
     def __init__(
         self,
-        num_models: int,
-        hidden_dim: int,
-        fusion_strategy: str = "attention",
+        input_dims: List[int],
+        output_dim: int,
+        num_layers: int = 2,
+        fusion_at_each_layer: bool = True,
     ):
         """
         Initialize hierarchical fusion.
         
         Args:
-            num_models: Number of models to fuse
-            hidden_dim: Hidden dimension size
-            fusion_strategy: Strategy for each fusion stage (attention, weighted)
+            input_dims: List of input dimensions from each model
+            output_dim: Output dimension
+            num_layers: Number of fusion layers
+            fusion_at_each_layer: Whether to fuse at each layer or just at the end
         """
         super().__init__()
         
-        self.num_models = num_models
-        self.hidden_dim = hidden_dim
+        self.num_models = len(input_dims)
+        self.input_dims = input_dims
+        self.output_dim = output_dim
+        self.num_layers = num_layers
+        self.fusion_at_each_layer = fusion_at_each_layer
         
-        # Create fusion layers for hierarchical combination
+        # Input projections
+        self.input_projections = nn.ModuleList([
+            nn.Linear(in_dim, output_dim) if in_dim != output_dim else nn.Identity()
+            for in_dim in input_dims
+        ])
+        
+        # Create fusion layers for hierarchical processing
         self.fusion_layers = nn.ModuleList()
-        
-        # Binary tree fusion
-        num_stages = (num_models - 1).bit_length()
-        for _ in range(num_stages):
-            if fusion_strategy == "attention":
-                layer = AttentionFusion(hidden_dim)
+        for i in range(num_layers):
+            if i == 0:
+                # First layer: combine all models
+                self.fusion_layers.append(
+                    LearnedWeightedFusion([output_dim] * self.num_models, output_dim)
+                )
             else:
-                layer = LearnedWeightedFusion(2, hidden_dim)
-            self.fusion_layers.append(layer)
+                # Subsequent layers: refine the fusion
+                self.fusion_layers.append(
+                    AttentionFusion([output_dim], output_dim)
+                )
     
     def forward(self, hidden_states: List[torch.Tensor]) -> torch.Tensor:
         """
         Fuse hidden states hierarchically.
         
         Args:
-            hidden_states: List of tensors (batch, seq_len, hidden_dim)
+            hidden_states: List of tensors (batch, hidden_dim) or (batch, seq_len, hidden_dim)
         
         Returns:
-            Fused tensor (batch, seq_len, hidden_dim)
+            Fused tensor with output_dim
         """
-        current_states = list(hidden_states)
+        # Project inputs first
+        projected_states = [proj(h) for h, proj in zip(hidden_states, self.input_projections)]
         
-        # Progressively fuse pairs
-        for fusion_layer in self.fusion_layers:
-            if len(current_states) == 1:
-                break
-            
-            next_states = []
-            for i in range(0, len(current_states), 2):
-                if i + 1 < len(current_states):
-                    # Fuse pair
-                    fused = fusion_layer([current_states[i], current_states[i + 1]])
-                    next_states.append(fused)
-                else:
-                    # Odd one out, carry forward
-                    next_states.append(current_states[i])
-            
-            current_states = next_states
-        
-        return current_states[0]
+        # Apply fusion layers
+        if self.num_layers == 1:
+            # Single layer fusion
+            return self.fusion_layers[0](projected_states)
+        else:
+            # Multi-layer fusion
+            fused = self.fusion_layers[0](projected_states)
+            for layer in self.fusion_layers[1:]:
+                fused = layer([fused])
+            return fused

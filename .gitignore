@@ -41,3 +41,7 @@ mcp/dist/
 
 # Neo4j
 neo4j_data/
+
+# Rust
+rust/target/
+Cargo.lock
