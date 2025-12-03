@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why 8-Dot Braille? - Autonomous Git</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hero-why {
+            min-height: 60vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .braille-demo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4rem;
+            margin: 2rem 0;
+            color: #00d9ff;
+        }
+        
+        .dot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            max-width: 200px;
+            margin: 2rem auto;
+        }
+        
+        .dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #00d9ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .comparison-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">🤖 Autonomous Git</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="getting-started.html">Getting Started</a>
+                <a href="scl-bifm.html">SCL + BIFM</a>
+                <a href="why-8-dot-braille.html" class="active">Why 8-Dot?</a>
+                <a href="https://github.com/elevate-foundry/salutations">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-why">
+        <div class="container">
+            <h1 style="font-size: 3.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #00d9ff 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Why 8-Dot Braille?
+            </h1>
+            <p style="font-size: 1.5rem; color: #a8dadc; margin-bottom: 2rem;">
+                The perfect encoding for 3D fitness topology
+            </p>
+            <div class="braille-demo">⣯</div>
+            <p style="color: #888; font-size: 1.1rem;">
+                One character. Three dimensions. Infinite understanding.
+            </p>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: #0a0a0f;">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">The 8-Dot Advantage</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h3 style="color: #00d9ff; margin-bottom: 1rem;">6-Dot Braille (Standard)</h3>
+                    <div class="dot-grid" style="grid-template-rows: repeat(3, 1fr);">
+                        <div class="dot">1</div>
+                        <div class="dot">4</div>
+                        <div class="dot">2</div>
+                        <div class="dot">5</div>
+                        <div class="dot">3</div>
+                        <div class="dot">6</div>
+                    </div>
+                    <p style="color: #a8dadc; margin-top: 1rem;">
+                        <strong>64 combinations</strong><br>
+                        2³ × 2³ = 8 × 8<br>
+                        Good for letters, but limited
+                    </p>
+                </div>
+
+                <div class="comparison-card" style="border-color: #00d9ff;">
+                    <h3 style="color: #00d9ff; margin-bottom: 1rem;">8-Dot Braille (Nemeth/Computer)</h3>
+                    <div class="dot-grid" style="grid-template-rows: repeat(4, 1fr);">
+                        <div class="dot">1</div>
+                        <div class="dot">4</div>
+                        <div class="dot">2</div>
+                        <div class="dot">5</div>
+                        <div class="dot">3</div>
+                        <div class="dot">6</div>
+                        <div class="dot" style="background: #8b5cf6;">7</div>
+                        <div class="dot" style="background: #8b5cf6;">8</div>
+                    </div>
+                    <p style="color: #a8dadc; margin-top: 1rem;">
+                        <strong>256 combinations</strong><br>
+                        2³ × 2³ × 2² = 8 × 8 × 4<br>
+                        Perfect for 3D encoding!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">The Musical Analogy</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto; background: rgba(0, 0, 0, 0.3); padding: 3rem; border-radius: 16px;">
+                <h3 style="color: #8b5cf6; margin-bottom: 2rem; text-align: center;">8-Dot Braille = Musical Notation</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                    <div>
+                        <h4 style="color: #00d9ff; margin-bottom: 1rem;">🎵 Music</h4>
+                        <ul style="color: #a8dadc; line-height: 2;">
+                            <li><strong>Pitch</strong>: Which note (C, D, E...)</li>
+                            <li><strong>Duration</strong>: How long (♩, ♪, 𝅝)</li>
+                            <li><strong>Dynamics</strong>: How loud (𝆏, 𝆑, 𝆐)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #8b5cf6; margin-bottom: 1rem;">📊 BIFM-64</h4>
+                        <ul style="color: #a8dadc; line-height: 2;">
+                            <li><strong>κ (Curvature)</strong>: Semantic change</li>
+                            <li><strong>σ (Stability)</strong>: Risk/volatility</li>
+                            <li><strong>δ (Direction)</strong>: Trajectory</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p style="color: #a8dadc; text-align: center; margin-top: 2rem; font-size: 1.1rem;">
+                    Just as musical notation encodes three dimensions of sound,<br>
+                    <strong>8-dot Braille encodes three dimensions of code fitness.</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: #0a0a0f;">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">The Math: Perfect Partitioning</h2>
+            
+            <div style="max-width: 900px; margin: 0 auto;">
+                <div style="background: #1a1a2e; padding: 3rem; border-radius: 16px; border: 2px solid #00d9ff;">
+                    <h3 style="color: #00d9ff; margin-bottom: 2rem; text-align: center;">8-Dot Braille Structure</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center;">
+                        <div>
+                            <div style="font-size: 3rem; color: #4ade80; margin-bottom: 1rem;">⠇</div>
+                            <h4 style="color: #4ade80; margin-bottom: 0.5rem;">Left Column</h4>
+                            <p style="color: #a8dadc;">Dots 1-2-3</p>
+                            <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">2³ = 8 values</p>
+                            <p style="color: #00d9ff; font-weight: bold; margin-top: 0.5rem;">κ (Curvature)</p>
+                        </div>
+                        
+                        <div>
+                            <div style="font-size: 3rem; color: #fbbf24; margin-bottom: 1rem;">⠸</div>
+                            <h4 style="color: #fbbf24; margin-bottom: 0.5rem;">Right Column</h4>
+                            <p style="color: #a8dadc;">Dots 4-5-6</p>
+                            <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">2³ = 8 values</p>
+                            <p style="color: #8b5cf6; font-weight: bold; margin-top: 0.5rem;">σ (Stability)</p>
+                        </div>
+                        
+                        <div>
+                            <div style="font-size: 3rem; color: #f87171; margin-bottom: 1rem;">⣀</div>
+                            <h4 style="color: #f87171; margin-bottom: 0.5rem;">Bottom Pair</h4>
+                            <p style="color: #a8dadc;">Dots 7-8</p>
+                            <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">2² = 4 values</p>
+                            <p style="color: #22c55e; font-weight: bold; margin-top: 0.5rem;">δ (Direction)</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 3rem; padding: 2rem; background: rgba(0, 217, 255, 0.1); border-radius: 12px;">
+                        <p style="color: #00d9ff; font-size: 1.3rem; text-align: center; margin-bottom: 1rem;">
+                            <strong>8 × 8 × 4 = 256 unique fitness states</strong>
+                        </p>
+                        <p style="color: #a8dadc; text-align: center;">
+                            No collisions. No aliasing. Lossless encoding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">Why Not 6-Dot?</h2>
+            
+            <div style="max-width: 700px; margin: 0 auto;">
+                <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.3); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="color: #f87171; margin-bottom: 1rem;">❌ 6-Dot Limitations</h3>
+                    <ul style="color: #a8dadc; line-height: 2;">
+                        <li>Only 64 combinations (2⁶)</li>
+                        <li>Can't encode 3D space efficiently</li>
+                        <li>Would need multiple characters</li>
+                        <li>Loses the "one character = one fitness" elegance</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 16px; padding: 2rem;">
+                    <h3 style="color: #4ade80; margin-bottom: 1rem;">✅ 8-Dot Advantages</h3>
+                    <ul style="color: #a8dadc; line-height: 2;">
+                        <li>256 combinations (2⁸) = perfect 3D encoding</li>
+                        <li>Natural spatial partitioning (left/right/bottom)</li>
+                        <li>One character = complete fitness topology</li>
+                        <li>Already used for math (Nemeth) and computers</li>
+                        <li>Tactile-friendly for Braille displays</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: #0a0a0f;">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; color: #00d9ff;">Historical Context</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto; color: #a8dadc; line-height: 1.8;">
+                <p style="margin-bottom: 1.5rem;">
+                    <strong style="color: #00d9ff;">8-dot Braille</strong> was developed for <strong>computer Braille</strong> and <strong>Nemeth Braille</strong> (mathematics). 
+                    It extends the standard 6-dot system by adding two dots at the bottom (dots 7 and 8).
+                </p>
+                
+                <p style="margin-bottom: 1.5rem;">
+                    This extension was necessary because:
+                </p>
+                
+                <ul style="margin-left: 2rem; margin-bottom: 1.5rem;">
+                    <li>Computers need to represent all ASCII characters (256 values)</li>
+                    <li>Mathematical notation requires more symbols than 64</li>
+                    <li>Programming languages need special characters</li>
+                </ul>
+                
+                <p style="margin-bottom: 1.5rem;">
+                    <strong style="color: #8b5cf6;">BIFM-64</strong> uses 8-dot Braille for the same reason: 
+                    <strong>we need to encode 3D information in a single, tactile-friendly character.</strong>
+                </p>
+                
+                <p style="background: rgba(0, 217, 255, 0.1); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #00d9ff;">
+                    <strong style="color: #00d9ff;">The result:</strong> A fitness encoding that's accessible to blind developers, 
+                    readable by sighted developers, and parseable by machines. Universal by design.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 4rem 2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+        <div class="container" style="text-align: center;">
+            <h2 style="margin-bottom: 2rem; color: #00d9ff;">See It In Action</h2>
+            <div class="braille-demo" style="font-size: 5rem;">⣯</div>
+            <p style="color: #a8dadc; font-size: 1.2rem; margin: 2rem 0;">
+                κ=7, σ=5, δ=3<br>
+                (maximum deformation, high volatility, critical)
+            </p>
+            <div style="margin-top: 3rem;">
+                <a href="scl-bifm.html" class="btn btn-primary" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #00d9ff 0%, #8b5cf6 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                    Explore BIFM-64 →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: #0a0a0f; padding: 2rem; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <p style="color: #888;">
+            Built with 🤖 by <a href="https://github.com/elevate-foundry" style="color: #00d9ff;">Elevate Foundry</a> | 
+            Part of the <a href="https://github.com/elevate-foundry/salutations" style="color: #00d9ff;">Salutations</a> project
+        </p>
+        <p style="margin-top: 1rem; font-size: 0.875rem; color: #666;">
+            8-Dot Braille • Nemeth Code • Universal Accessibility
+        </p>
+    </footer>
+</body>
+</html>
