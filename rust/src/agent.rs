@@ -10,6 +10,7 @@ use tokio::time::{sleep, Duration};
 use crate::braider::MetaBraider;
 use crate::fitness::{CommitFitness, FitnessHistory, HistoricalCommit};
 use crate::scl::{SCLCommit, SemanticToken, LanguageRenderer, Language};
+use crate::bifm::FitnessTopology;
 
 #[derive(Debug, PartialEq)]
 pub enum AgentAction {
@@ -27,7 +28,9 @@ pub struct EntangledAgent {
     commit_count: u64,
     ghost_mode_active: bool,
     auto_push: bool,
-    history: FitnessHistory,  // Learning from past commits
+    history: FitnessHistory,
+    scl_enabled: bool,  // Use SCL for commits
+    language: Language, // Preferred language for rendering
 }
 
 impl EntangledAgent {
@@ -36,6 +39,16 @@ impl EntangledAgent {
     }
 
     pub fn with_auto_push(path: &PathBuf, threshold: f32, auto_push: bool) -> Result<Self> {
+        Self::with_scl(path, threshold, auto_push, false, Language::English)
+    }
+
+    pub fn with_scl(
+        path: &PathBuf,
+        threshold: f32,
+        auto_push: bool,
+        scl_enabled: bool,
+        language: Language,
+    ) -> Result<Self> {
         let repo = Repository::open(path).context("Failed to open git repo")?;
         let history = Self::load_history(path)?;
         
@@ -48,6 +61,8 @@ impl EntangledAgent {
             ghost_mode_active: false,
             auto_push,
             history,
+            scl_enabled,
+            language,
         })
     }
 
@@ -165,6 +180,127 @@ impl EntangledAgent {
 
     /// Generate intelligent commit message
     fn generate_commit_message(&self, diff: &str) -> Result<String> {
+        if self.scl_enabled {
+            self.generate_scl_message(diff)
+        } else {
+            self.generate_traditional_message(diff)
+        }
+    }
+
+    /// Generate SCL commit message
+    fn generate_scl_message(&self, diff: &str) -> Result<String> {
+        // Extract semantic tokens from changes
+        let tokens = self.extract_semantic_tokens(diff);
+        
+        // Calculate fitness topology
+        let fitness = self.calculate_fitness_topology(diff)?;
+        
+        // Create SCL commit with fitness
+        let scl_commit = SCLCommit::with_fitness(
+            tokens,
+            "autonomous-agent".to_string(),
+            Some(fitness),
+        );
+        
+        // Render in preferred language
+        let renderer = LanguageRenderer::new();
+        let message = renderer.render(&scl_commit, self.language);
+        
+        // Show Braille FIRST (native format)
+        println!("\n{} {}", "🔤".cyan(), scl_commit.braille);
+        println!("{} {} translation: {}", "🌍".cyan(), format!("{:?}", self.language), message);
+        
+        // Show fitness topology
+        println!("{} κ={} σ={} δ={} ({})", 
+            "📊".purple(),
+            fitness.kappa, fitness.sigma, fitness.delta,
+            fitness.interpret());
+        
+        Ok(format!("{}\n\nSCL: {}", scl_commit.braille, message))
+    }
+    
+    /// Calculate fitness topology from diff
+    fn calculate_fitness_topology(&self, diff: &str) -> Result<FitnessTopology> {
+        let lines: Vec<&str> = diff.lines().collect();
+        let file_count = lines.len();
+        
+        // Estimate line changes (rough heuristic)
+        let line_changes = file_count * 50; // Assume ~50 lines per file
+        
+        // Check for tests
+        let has_tests = diff.contains("test");
+        
+        // Check for breaking changes
+        let has_breaking = diff.contains("BREAKING") 
+            || diff.contains("breaking")
+            || diff.contains("!:");
+        
+        // Get current fitness score
+        let (fitness_score, _, _) = self.braider.braid(diff);
+        
+        Ok(FitnessTopology::from_analysis(
+            file_count,
+            line_changes,
+            has_tests,
+            has_breaking,
+            fitness_score,
+        ))
+    }
+
+    /// Extract semantic tokens from diff
+    fn extract_semantic_tokens(&self, diff: &str) -> Vec<SemanticToken> {
+        let mut tokens = Vec::new();
+        
+        // Analyze what changed
+        let has_test = diff.contains("test");
+        let has_doc = diff.contains(".md");
+        let has_auth = diff.contains("auth");
+        let has_security = diff.contains("security") || diff.contains("sec");
+        let has_perf = diff.contains("perf") || diff.contains("performance");
+        let has_fix = diff.contains("fix") || diff.contains("bug");
+        let has_new = diff.contains("NEW:");
+        let has_refactor = diff.contains("refactor");
+        
+        // Determine action
+        if has_fix {
+            tokens.push(SemanticToken::Fix);
+        } else if has_new {
+            tokens.push(SemanticToken::Add);
+        } else if has_refactor {
+            tokens.push(SemanticToken::Refactor);
+        } else {
+            tokens.push(SemanticToken::Update);
+        }
+        
+        // Determine domain
+        if has_auth {
+            tokens.push(SemanticToken::Authentication);
+        } else if has_security {
+            tokens.push(SemanticToken::Security);
+        } else if has_perf {
+            tokens.push(SemanticToken::Performance);
+        } else if has_test {
+            tokens.push(SemanticToken::Testing);
+        } else if has_doc {
+            tokens.push(SemanticToken::Documentation);
+        } else {
+            tokens.push(SemanticToken::Feature);
+        }
+        
+        // Add modifiers
+        if diff.contains("edge") || diff.contains("corner") {
+            tokens.push(SemanticToken::EdgeCase);
+        }
+        
+        if diff.contains("enhance") || diff.contains("improve") {
+            tokens.push(SemanticToken::Enhancement);
+        }
+        
+        tokens
+    }
+
+    /// Generate traditional commit message
+    fn generate_traditional_message(&self, diff: &str) -> Result<String> {
         let lines: Vec<&str> = diff.lines().collect();
         let mut files: Vec<String> = Vec::new();
 

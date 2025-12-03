@@ -10,6 +10,7 @@ mod braider;
 mod fitness;
 mod daemon;
 mod scl;
+mod bifm;
 
 use agent::EntangledAgent;
 
@@ -33,6 +34,14 @@ struct Cli {
     /// Auto-push after commit
     #[arg(short, long)]
     push: bool,
+
+    /// Use SCL (Semantic Compression Language) for commits
+    #[arg(long)]
+    scl: bool,
+
+    /// Language for SCL rendering (en, es, zh, ja, fr, de)
+    #[arg(long, default_value = "en")]
+    lang: String,
 
     #[command(subcommand)]
     command: Option<Commands>,
@@ -69,7 +78,7 @@ async fn main() -> Result<()> {
             if daemon {
                 daemon::run_daemon(&cli.repo, cli.interval, cli.threshold)?;
             } else {
-                run_agent(&cli.repo, cli.interval, cli.threshold, cli.push).await?;
+                run_agent(&cli.repo, cli.interval, cli.threshold, cli.push, cli.scl, &cli.lang).await?;
             }
         }
         Some(Commands::Check) => {
@@ -86,7 +95,7 @@ async fn main() -> Result<()> {
         }
         None => {
             // Default: run agent
-            run_agent(&cli.repo, cli.interval, cli.threshold, cli.push).await?;
+            run_agent(&cli.repo, cli.interval, cli.threshold, cli.push, cli.scl, &cli.lang).await?;
         }
     }
 
@@ -100,8 +109,26 @@ fn print_banner() {
     println!();
 }
 
-async fn run_agent(repo_path: &PathBuf, interval: u64, threshold: f32, auto_push: bool) -> Result<()> {
-    let mut agent = EntangledAgent::with_auto_push(repo_path, threshold, auto_push)
+async fn run_agent(
+    repo_path: &PathBuf,
+    interval: u64,
+    threshold: f32,
+    auto_push: bool,
+    scl_enabled: bool,
+    language: &str,
+) -> Result<()> {
+    use crate::scl::Language;
+    
+    let lang = match language {
+        "es" => Language::Spanish,
+        "zh" => Language::Chinese,
+        "ja" => Language::Japanese,
+        "fr" => Language::French,
+        "de" => Language::German,
+        _ => Language::English,
+    };
+    
+    let mut agent = EntangledAgent::with_scl(repo_path, threshold, auto_push, scl_enabled, lang)
         .context("Failed to initialize agent")?;
 
     info!("Agent initialized");
@@ -109,6 +136,10 @@ async fn run_agent(repo_path: &PathBuf, interval: u64, threshold: f32, auto_push
     info!("Check interval: {}s", interval);
     info!("Fitness threshold: {:.2}", threshold);
     info!("Auto-push: {}", if auto_push { "enabled" } else { "disabled" });
+    info!("SCL: {}", if scl_enabled { "enabled" } else { "disabled" });
+    if scl_enabled {
+        info!("Language: {:?}", lang);
+    }
 
     agent.run(interval).await
 }

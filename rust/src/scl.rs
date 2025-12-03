@@ -83,6 +83,8 @@ impl SemanticToken {
     }
 }
 
+use crate::bifm::FitnessTopology;
+
 /// SCL Commit - compressed semantic representation
 #[derive(Debug, Clone)]
 pub struct SCLCommit {
@@ -92,6 +94,9 @@ pub struct SCLCommit {
     /// Braille representation (native format)
     pub braille: String,
     
+    /// Fitness topology (BIFM-64)
+    pub fitness: Option<FitnessTopology>,
+    
     /// Metadata
     pub timestamp: String,
     pub author: String,
@@ -100,15 +105,31 @@ pub struct SCLCommit {
 impl SCLCommit {
     /// Create from semantic tokens
     pub fn new(tokens: Vec<SemanticToken>, author: String) -> Self {
-        let braille = tokens
+        Self::with_fitness(tokens, author, None)
+    }
+    
+    /// Create with fitness topology
+    pub fn with_fitness(
+        tokens: Vec<SemanticToken>,
+        author: String,
+        fitness: Option<FitnessTopology>,
+    ) -> Self {
+        let mut braille = tokens
             .iter()
             .map(|t| t.to_braille().0)
             .collect::<Vec<_>>()
             .join(".");
         
+        // Append fitness topology if present
+        if let Some(ref f) = fitness {
+            braille.push('.');
+            braille.push(f.to_braille());
+        }
+        
         Self {
             tokens,
             braille,
+            fitness,
             timestamp: chrono::Utc::now().to_rfc3339(),
             author,
         }
@@ -116,10 +137,22 @@ impl SCLCommit {
     
     /// Parse from Braille string
     pub fn from_braille(braille: &str, author: String) -> Option<Self> {
-        let tokens: Vec<SemanticToken> = braille
-            .split('.')
-            .filter_map(|b| SemanticToken::from_braille(&BrailleToken(b.to_string())))
-            .collect();
+        let parts: Vec<&str> = braille.split('.').collect();
+        
+        let mut tokens = Vec::new();
+        let mut fitness = None;
+        
+        for part in parts {
+            // Try to parse as semantic token first
+            if let Some(token) = SemanticToken::from_braille(&BrailleToken(part.to_string())) {
+                tokens.push(token);
+            } else if part.len() == 1 {
+                // Try to parse as fitness topology (single character)
+                if let Some(c) = part.chars().next() {
+                    fitness = FitnessTopology::from_braille(c);
+                }
+            }
+        }
         
         if tokens.is_empty() {
             return None;
@@ -128,6 +161,7 @@ impl SCLCommit {
         Some(Self {
             tokens: tokens.clone(),
             braille: braille.to_string(),
+            fitness,
             timestamp: chrono::Utc::now().to_rfc3339(),
             author,
         })
