@@ -1,0 +1,11 @@
+# GitHub Pages configuration
+# This file tells GitHub Pages to serve the site as-is without Jekyll processing
+
+# Disable Jekyll processing
+include:
+  - _config.yml
+
+# Exclude files from the site
+exclude:
+  - README.md
+  - .gitignore
