@@ -22,22 +22,37 @@ impl ExpertModel for SyntaxExpert {
     fn forward(&self, input: &str) -> HiddenState {
         let mut state = Array1::zeros(128);
 
-        // Analyze syntax quality
-        let has_todos = input.contains("TODO") || input.contains("FIXME");
-        let has_warnings = input.contains("HACK") || input.contains("XXX");
-        let has_tests = input.contains("test_") || input.contains("Test");
-        let has_docs = input.contains("///") || input.contains("/**");
-
-        if has_todos || has_warnings {
-            state.fill(-0.8); // Distress signal
-        } else if has_tests && has_docs {
-            state.fill(0.9); // High quality
-        } else if has_tests || has_docs {
-            state.fill(0.6); // Good
-        } else {
-            state.fill(0.3); // Neutral
-        }
-
+        // Count different quality indicators
+        let lines: Vec<&str> = input.lines().collect();
+        let total_lines = lines.len().max(1) as f32;
+        
+        // Negative indicators
+        let todo_count = input.matches("TODO").count() + input.matches("FIXME").count();
+        let warning_count = input.matches("HACK").count() + input.matches("XXX").count();
+        
+        // Positive indicators
+        let test_count = input.matches("test").count() + input.matches("Test").count();
+        let doc_count = input.matches(".md").count() + input.matches("///").count();
+        let rust_count = input.matches(".rs").count();
+        let py_count = input.matches(".py").count();
+        
+        // Calculate score based on actual content
+        let mut score = 0.5; // Start neutral
+        
+        // Penalties
+        score -= (todo_count as f32 / total_lines) * 2.0;
+        score -= (warning_count as f32 / total_lines) * 1.5;
+        
+        // Bonuses
+        score += (test_count as f32 / total_lines) * 0.8;
+        score += (doc_count as f32 / total_lines) * 0.6;
+        score += (rust_count as f32 / total_lines) * 0.3; // Rust is good!
+        score += (py_count as f32 / total_lines) * 0.2;
+        
+        // Clamp to [-1, 1]
+        score = score.max(-1.0).min(1.0);
+        
+        state.fill(score);
         state
     }
 }
@@ -53,20 +68,47 @@ impl ExpertModel for LogicExpert {
     fn forward(&self, input: &str) -> HiddenState {
         let mut state = Array1::zeros(128);
 
-        // Analyze complexity
+        // Analyze complexity dynamically
         let line_count = input.lines().count();
-        let file_count = input.matches("MODIFIED:").count() + input.matches("NEW:").count();
+        let file_count = input.matches("MODIFIED:").count() 
+            + input.matches("NEW:").count() 
+            + input.matches("DELETED:").count();
 
-        // Sweet spot: 3-7 files, moderate changes
-        let complexity = if (3..=7).contains(&file_count) {
-            0.8 // Optimal
+        // Different file types have different complexity
+        let rust_files = input.matches(".rs").count();
+        let py_files = input.matches(".py").count();
+        let md_files = input.matches(".md").count();
+        let config_files = input.matches(".toml").count() 
+            + input.matches(".json").count() 
+            + input.matches(".yaml").count();
+        
+        // Calculate complexity score
+        let mut score = 0.5;
+        
+        // File count scoring (sweet spot: 3-7)
+        if (3..=7).contains(&file_count) {
+            score += 0.3;
         } else if file_count < 3 {
-            0.4 // Too small
-        } else {
-            0.3 // Too large
-        };
-
-        state.fill(complexity);
+            score -= 0.1;
+        } else if file_count > 10 {
+            score -= 0.3;
+        }
+        
+        // Type diversity (mixed is good)
+        let type_diversity = [rust_files > 0, py_files > 0, md_files > 0, config_files > 0]
+            .iter()
+            .filter(|&&x| x)
+            .count();
+        
+        score += (type_diversity as f32) * 0.1;
+        
+        // Line count (not too big)
+        if line_count > 50 {
+            score -= 0.2;
+        }
+        
+        score = score.max(0.0).min(1.0);
+        state.fill(score);
         state
     }
 }

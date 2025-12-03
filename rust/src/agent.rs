@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use tokio::time::{sleep, Duration};
 
 use crate::braider::MetaBraider;
-use crate::fitness::CommitFitness;
+use crate::fitness::{CommitFitness, FitnessHistory, HistoricalCommit};
 
 #[derive(Debug, PartialEq)]
 pub enum AgentAction {
@@ -25,7 +25,8 @@ pub struct EntangledAgent {
     fitness_threshold: f32,
     commit_count: u64,
     ghost_mode_active: bool,
-    auto_push: bool,  // NEW: Auto-push after commit
+    auto_push: bool,
+    history: FitnessHistory,  // Learning from past commits
 }
 
 impl EntangledAgent {
@@ -35,6 +36,8 @@ impl EntangledAgent {
 
     pub fn with_auto_push(path: &PathBuf, threshold: f32, auto_push: bool) -> Result<Self> {
         let repo = Repository::open(path).context("Failed to open git repo")?;
+        let history = Self::load_history(path)?;
+        
         Ok(Self {
             repo_path: path.clone(),
             repo,
@@ -43,7 +46,30 @@ impl EntangledAgent {
             commit_count: 0,
             ghost_mode_active: false,
             auto_push,
+            history,
         })
+    }
+
+    /// Load commit history from disk
+    fn load_history(path: &PathBuf) -> Result<FitnessHistory> {
+        let history_file = path.join(".git").join("agit_history.json");
+        
+        if history_file.exists() {
+            let content = std::fs::read_to_string(&history_file)?;
+            let history: FitnessHistory = serde_json::from_str(&content)?;
+            info!("Loaded {} commits from history", history.commits.len());
+            Ok(history)
+        } else {
+            Ok(FitnessHistory::new())
+        }
+    }
+
+    /// Save commit history to disk
+    fn save_history(&self) -> Result<()> {
+        let history_file = self.repo_path.join(".git").join("agit_history.json");
+        let content = serde_json::to_string_pretty(&self.history)?;
+        std::fs::write(&history_file, content)?;
+        Ok(())
     }
 
     /// The "Eyes": Perceives the current state of the repo
@@ -80,7 +106,23 @@ impl EntangledAgent {
     /// Calculate fitness score with detailed breakdown
     pub fn calculate_fitness(&self, diff: &str) -> Result<(f32, String, HashMap<String, f32>)> {
         let (fitness, reasoning, breakdown) = self.braider.braid(diff);
-        Ok((fitness, reasoning, breakdown))
+        
+        // Adjust based on historical learning
+        let adjusted_fitness = if self.history.commits.len() > 5 {
+            let avg_fitness = self.history.average_fitness();
+            let avg_files = self.history.average_file_count();
+            let current_files = diff.lines().count();
+            
+            // Bonus if similar to historical patterns
+            let file_similarity = 1.0 - ((current_files as f32 - avg_files).abs() / avg_files.max(1.0));
+            let learning_bonus = file_similarity * 0.05;
+            
+            (fitness + learning_bonus).min(1.0)
+        } else {
+            fitness
+        };
+        
+        Ok((adjusted_fitness, reasoning, breakdown))
     }
 
     /// The "Brain Loop": Calculates fitness and decides action
@@ -162,34 +204,42 @@ impl EntangledAgent {
     }
 
     /// Execute a Real Commit
-    pub fn execute_commit(&mut self, message: &str) -> Result<()> {
-        let mut index = self.repo.index()?;
+    pub fn execute_commit(&mut self, message: &str, analysis: &str) -> Result<()> {
+        // Clone what we need for learning
+        let message_clone = message.to_string();
+        let analysis_clone = analysis.to_string();
+        
+        // Do all git operations in a scope to release borrows
+        {
+            let mut index = self.repo.index()?;
 
-        // Stage all changes
-        let mut opts = StatusOptions::new();
-        opts.include_untracked(true);
-        let statuses = self.repo.statuses(Some(&mut opts))?;
+            // Stage all changes
+            let mut opts = StatusOptions::new();
+            opts.include_untracked(true);
+            let statuses = self.repo.statuses(Some(&mut opts))?;
 
-        for entry in statuses.iter() {
-            if let Some(path) = entry.path() {
-                index.add_path(Path::new(path))?;
+            for entry in statuses.iter() {
+                if let Some(path) = entry.path() {
+                    index.add_path(Path::new(path))?;
+                }
             }
-        }
-        index.write()?;
+            
+            index.write()?;
 
-        let oid = index.write_tree()?;
-        let tree = self.repo.find_tree(oid)?;
-        let sig = self.repo.signature()?;
-        let parent_commit = self.repo.head()?.peel_to_commit()?;
+            let oid = index.write_tree()?;
+            let tree = self.repo.find_tree(oid)?;
+            let sig = self.repo.signature()?;
+            let parent_commit = self.repo.head()?.peel_to_commit()?;
 
-        self.repo.commit(
-            Some("HEAD"),
-            &sig,
-            &sig,
-            message,
-            &tree,
-            &[&parent_commit],
-        )?;
+            self.repo.commit(
+                Some("HEAD"),
+                &sig,
+                &sig,
+                message,
+                &tree,
+                &[&parent_commit],
+            )?;
+        } // All repo borrows released here
 
         self.commit_count += 1;
 
@@ -200,12 +250,64 @@ impl EntangledAgent {
         );
         println!("   {} Total commits: {}", "📊".cyan(), self.commit_count);
 
+        // Learn from this commit (now safe to borrow mutably)
+        self.learn_from_commit(&message_clone, &analysis_clone)?;
+
         // Auto-push if enabled
         if self.auto_push {
             self.execute_push()?;
         }
 
         Ok(())
+    }
+
+    /// Learn from a commit to improve future decisions
+    fn learn_from_commit(&mut self, message: &str, analysis: &str) -> Result<()> {
+        use chrono::Utc;
+
+        // Calculate fitness for this commit
+        let (fitness, _, _) = self.braider.braid(analysis);
+        
+        // Count files
+        let file_count = analysis.lines().count();
+
+        // Add to history
+        let commit = HistoricalCommit {
+            timestamp: Utc::now().to_rfc3339(),
+            fitness,
+            file_count,
+            message: message.to_string(),
+        };
+
+        self.history.add_commit(commit);
+
+        // Save history
+        self.save_history()?;
+
+        // Show learning stats every 10 commits
+        if self.history.commits.len() % 10 == 0 {
+            self.show_learning_stats();
+        }
+
+        Ok(())
+    }
+
+    /// Show what the agent has learned
+    fn show_learning_stats(&self) {
+        println!("\n{}", "📚 LEARNING STATS".purple().bold());
+        println!("   Total commits: {}", self.history.commits.len());
+        println!("   Average fitness: {:.2}", self.history.average_fitness());
+        println!("   Average files/commit: {:.1}", self.history.average_file_count());
+        
+        // Suggest threshold adjustment
+        let avg_fitness = self.history.average_fitness();
+        if avg_fitness > self.fitness_threshold + 0.1 {
+            println!("   {} Consider raising threshold to {:.2}", 
+                "💡".yellow(), avg_fitness - 0.05);
+        } else if avg_fitness < self.fitness_threshold - 0.1 {
+            println!("   {} Consider lowering threshold to {:.2}", 
+                "💡".yellow(), avg_fitness + 0.05);
+        }
     }
 
     /// Execute a push to remote
@@ -270,9 +372,10 @@ impl EntangledAgent {
                     if !diff.is_empty() {
                         println!("\n{} Detected changes...", "👀".blue());
 
+                        let diff_clone = diff.clone();
                         match self.decide(&diff)? {
                             AgentAction::Commit(msg) => {
-                                if let Err(e) = self.execute_commit(&msg) {
+                                if let Err(e) = self.execute_commit(&msg, &diff_clone) {
                                     error!("Commit failed: {}", e);
                                 }
                             }
