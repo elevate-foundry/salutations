@@ -129,34 +129,77 @@ impl ExpertModel for SemanticExpert {
         let mut paths: Vec<&str> = Vec::new();
 
         for line in lines {
-            if line.starts_with("MODIFIED:") || line.starts_with("NEW:") {
+            if line.starts_with("MODIFIED:") || line.starts_with("NEW:") || line.starts_with("DELETED:") {
                 if let Some(path) = line.split_whitespace().nth(1) {
                     paths.push(path);
                 }
             }
         }
 
-        // Check coherence: are files related?
-        let coherence = if paths.is_empty() {
-            0.0
-        } else {
-            // Simple heuristic: files in same directory = coherent
-            let dirs: Vec<_> = paths
-                .iter()
-                .filter_map(|p| p.rsplit_once('/').map(|(d, _)| d))
-                .collect();
+        if paths.is_empty() {
+            state.fill(0.0);
+            return state;
+        }
 
-            let unique_dirs = dirs.iter().collect::<std::collections::HashSet<_>>().len();
+        // Extract directories and filenames
+        let dirs: Vec<_> = paths
+            .iter()
+            .filter_map(|p| p.rsplit_once('/').map(|(d, _)| d))
+            .collect();
+        
+        let filenames: Vec<_> = paths
+            .iter()
+            .filter_map(|p| p.rsplit_once('/').map(|(_, f)| f))
+            .collect();
 
-            if unique_dirs <= 2 {
-                0.9 // Highly coherent
-            } else if unique_dirs <= 4 {
-                0.6 // Moderately coherent
-            } else {
-                0.3 // Scattered
+        let unique_dirs = dirs.iter().collect::<std::collections::HashSet<_>>().len();
+        
+        // Check for name similarity (related files)
+        let mut name_similarity: f32 = 0.0;
+        for i in 0..filenames.len() {
+            for j in (i+1)..filenames.len() {
+                let f1 = filenames[i];
+                let f2 = filenames[j];
+                
+                // Check for common prefixes/suffixes
+                let common_prefix = f1.chars()
+                    .zip(f2.chars())
+                    .take_while(|(a, b)| a == b)
+                    .count();
+                
+                if common_prefix > 3 {
+                    name_similarity += 0.2;
+                }
             }
-        };
-
+        }
+        
+        // Calculate coherence score
+        let mut coherence: f32 = 0.5;
+        
+        // Directory coherence
+        if unique_dirs <= 1 {
+            coherence += 0.4; // All in same dir
+        } else if unique_dirs <= 2 {
+            coherence += 0.2; // Mostly related
+        } else if unique_dirs > 4 {
+            coherence -= 0.3; // Very scattered
+        }
+        
+        // Name similarity bonus
+        coherence += name_similarity.min(0.3_f32);
+        
+        // File type coherence
+        let extensions: Vec<_> = paths
+            .iter()
+            .filter_map(|p| p.rsplit_once('.').map(|(_, e)| e))
+            .collect();
+        let unique_extensions = extensions.iter().collect::<std::collections::HashSet<_>>().len();
+        
+        if unique_extensions == 1 {
+            coherence += 0.2; // All same type
+        }
+        
+        coherence = coherence.max(0.0_f32).min(1.0_f32);
         state.fill(coherence);
         state
     }
