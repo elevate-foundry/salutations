@@ -1,12 +1,19 @@
-# Salutations - Multi-LLM Braiding System
+# Salutations
 
-A language model system that braids multiple LLMs together with search capabilities via Playwright MCP and graph-based memory using Neo4j.
+Multi-LLM braiding system with autonomous Git.
 
-## 🌐 NEW: Autonomous Git Website
+## 🤖 Autonomous Git - Start Here
 
-**Check out the live site!** [https://ryanbarrett.github.io/salutations/](https://ryanbarrett.github.io/salutations/)
+**Git that manages itself using AI.** 
 
-Learn about Autonomous Git - the AI-powered version control system that manages itself. See [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) for deployment instructions.
+👉 **[AUTONOMOUS_GIT_README.md](AUTONOMOUS_GIT_README.md)** - Quick start guide
+
+```bash
+cd rust && cargo build --release
+./target/release/agit check
+```
+
+📚 **Too many docs?** See [DOCS_GUIDE.md](DOCS_GUIDE.md) for navigation.
 
 ## 🚀 NEW: Automated Testing in 5 Minutes
 

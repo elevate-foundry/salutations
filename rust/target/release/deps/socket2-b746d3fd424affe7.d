@@ -1,0 +1,11 @@
+/Users/ryanbarrett/salutations/rust/target/release/deps/libsocket2-b746d3fd424affe7.rmeta: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockaddr.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/socket.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockref.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sys/unix.rs
+
+/Users/ryanbarrett/salutations/rust/target/release/deps/libsocket2-b746d3fd424affe7.rlib: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockaddr.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/socket.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockref.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sys/unix.rs
+
+/Users/ryanbarrett/salutations/rust/target/release/deps/socket2-b746d3fd424affe7.d: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockaddr.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/socket.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockref.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sys/unix.rs
+
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/lib.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockaddr.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/socket.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sockref.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.1/src/sys/unix.rs:

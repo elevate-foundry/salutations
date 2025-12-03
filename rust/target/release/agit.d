@@ -1,0 +1,1 @@
+/Users/ryanbarrett/salutations/rust/target/release/agit: /Users/ryanbarrett/salutations/rust/src/agent.rs /Users/ryanbarrett/salutations/rust/src/braider.rs /Users/ryanbarrett/salutations/rust/src/daemon.rs /Users/ryanbarrett/salutations/rust/src/fitness.rs /Users/ryanbarrett/salutations/rust/src/main.rs

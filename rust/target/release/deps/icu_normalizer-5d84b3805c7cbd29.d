@@ -1,0 +1,10 @@
+/Users/ryanbarrett/salutations/rust/target/release/deps/libicu_normalizer-5d84b3805c7cbd29.rmeta: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/properties.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/provider.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/uts46.rs
+
+/Users/ryanbarrett/salutations/rust/target/release/deps/libicu_normalizer-5d84b3805c7cbd29.rlib: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/properties.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/provider.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/uts46.rs
+
+/Users/ryanbarrett/salutations/rust/target/release/deps/icu_normalizer-5d84b3805c7cbd29.d: /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/lib.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/properties.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/provider.rs /Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/uts46.rs
+
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/lib.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/properties.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/provider.rs:
+/Users/ryanbarrett/.cargo/registry/src/index.crates.io-6f17d22bba15001f/icu_normalizer-2.1.1/src/uts46.rs:
